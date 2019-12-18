@@ -1,0 +1,7 @@
+
+secret.path=path
+
+camel.component.smtps.configuration.username=xxx@gmail.com
+camel.component.smtps.configuration.password=yyyyy
+
+camel.component.smtps.configuration.to=me@wunderlist.com
