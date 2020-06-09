@@ -1,4 +1,4 @@
-// camel-k: language=groovy
+// camel-k: language=groovy property-file=application.properties
 
 from('undertow:http://0.0.0.0:8080/{{secret.path}}')
   .choice()
@@ -6,11 +6,45 @@ from('undertow:http://0.0.0.0:8080/{{secret.path}}')
         .log('Received: ${body}')
         .process("cleanup")
         .log('Transformed: ${body}')
-        .setHeader("Subject").simple('${body}')
+        .to("direct:addTask")
         .setBody().constant("")
-        .to('smtps://smtp.gmail.com')
     .end()
 
+from('direct:addTask')
+  .removeHeaders('*')
+  .bean(this, 'create(${body})')
+  .marshal().json()
+  .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+  .setHeader("Authorization", constant("Bearer {{todo.access.token}}"))
+  .to('https://graph.microsoft.com/beta/me/todo/lists/{{todo.list}}/tasks')
+  .log('${body}')
+
+
+def create(String title) {
+  return new Task(title)
+}
+
+class Task {
+  String title
+  Body body
+
+  Task(title) {
+    this.title = title
+    this.body = new Body()
+  }
+
+}
+
+class Body {
+  String content
+  String contentType
+
+  Body() {
+    this.content = ""
+    this.contentType = "text"
+  }
+  
+}
 
 String[] stopPrefixes = [
   "una confezione di", "una scatola di",

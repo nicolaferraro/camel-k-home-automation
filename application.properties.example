@@ -1,7 +1,5 @@
 
-secret.path=path
+secret.path=<a-secret-path>
 
-camel.component.smtps.configuration.username=xxx@gmail.com
-camel.component.smtps.configuration.password=yyyyy
-
-camel.component.smtps.configuration.to=me@wunderlist.com
+todo.access.token=<your-access-token>
+todo.list=<your-list-id>
