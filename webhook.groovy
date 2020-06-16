@@ -1,4 +1,4 @@
-// camel-k: language=groovy property-file=application.properties
+// camel-k: language=groovy property-file=application.properties secret=azure
 
 from('undertow:http://0.0.0.0:8080/{{secret.path}}')
   .choice()
@@ -15,7 +15,7 @@ from('direct:addTask')
   .bean(this, 'create(${body})')
   .marshal().json()
   .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-  .setHeader("Authorization", constant("Bearer {{todo.access.token}}"))
+  .setHeader("Authorization", constant("Bearer {{secret:azure/token}}"))
   .to('https://graph.microsoft.com/beta/me/todo/lists/{{todo.list}}/tasks')
   .log('${body}')
 
